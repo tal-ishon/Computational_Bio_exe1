@@ -29,6 +29,11 @@ root = None
 generation_label = None
 canvas = None
 
+# for plots:
+# x = [] #holds the number of yellows each iteration
+# got_rumor = [] #holds the people who heard the rumor
+# got_rumor_lengths = []
+
 ############
 
 
@@ -214,7 +219,8 @@ class Grid:
         g_size = GRID_SIZE ** 2
         num_cells_with_person = int(round(P * g_size))
         population = [person_color] * num_cells_with_person + [non_person_color] * (g_size - num_cells_with_person)
-
+        
+        #for question 2, shuffle was removed.
         random.shuffle(population)
 
         self.population_grid = [population[i:i + GRID_SIZE] for i in range(0, len(population), GRID_SIZE)]
@@ -226,6 +232,7 @@ class Grid:
                 if self.population_grid[i][j] == person_color:
                     person_cells.append((i, j))
 
+        #for question 2, shuffle was removed.
         random.shuffle(person_cells)
         self.people = person_cells
 
@@ -244,7 +251,11 @@ class Grid:
             i, j = person.ID
             global generation
             if person.state:
+                #for plots: 
+                    #if person not in got_rumor:
+                    #got_rumor.append(person)
                 self.population_grid[i][j] = self.rumor_color
+                #counter += 1
             else:
                 self.population_grid[i][j] = self.person_color
 
@@ -259,6 +270,8 @@ class Grid:
                 #     self.population_grid[i][j] = "orange"
                 # if person.skepticism[0] == 4:
                 #     self.population_grid[i][j] = "magenta"
+        #x.append(counter)
+        #got_rumor_lengths.append(len(got_rumor))
 
     def draw_grid(self, begin=False):
         """
@@ -347,10 +360,25 @@ def get_skepticism(number_of_people):
     """
     skepticism = (S1,) * round(S[0] * number_of_people) + (S2,) * round(S[1] * number_of_people) + (S3,) * round(
         S[2] * number_of_people) + (S4,) * round(S[3] * number_of_people)
+    
+    ############################
+    #instead of earlier line,
+    # CODE FOR QUESTION PART 2:#
+    #for params:P=1, L=1, S1=0.3, S2=0.3, S3=0.2, S4=0.2
+    ############################
+    #skepticism = (S1,) * round(S[0] * number_of_people) + (S2,) * round(S[1] * number_of_people) + (S3,) * round(
+    #     S[2] * number_of_people)
+    # skept_list = list(skepticism)
+    # random.shuffle(skept_list)
+    # skepticism = tuple(skept_list)
+    # tuple_1 = (S4,) * round((S[3] * number_of_people)/5)
+    # skepticism = skepticism[:int(len(skepticism)/6)] + tuple_1 + skepticism[int(len(skepticism)/6):int(2*(len(skepticism)/6))] + tuple_1 + skepticism[int(2*(len(skepticism)/6)):int(3*(len(skepticism)/6))] + tuple_1 + skepticism[int(3*(len(skepticism)/6)):int(4*(len(skepticism)/6))] + tuple_1 + skepticism[int(4*(len(skepticism)/6)):int(5*(len(skepticism)/6))] + tuple_1 + skepticism[int(5*(len(skepticism)/6)):len(skepticism)]
+
 
     # each person has a skepticism level - odds a person believes a rumor
     # we will shuffle the list in order to later assign randomly the person's skepticism level.
     skept_list = list(skepticism)
+    #for the question 2 the shuffle was removed.
     random.shuffle(skept_list)
     skepticism = tuple(skept_list)
 
@@ -476,6 +504,12 @@ def main():
 
     # start spreading rumors
     start_rumor(grid, people)
+    
+    #for graphs:
+    #with open('spreadcount.csv', 'a', newline='') as file:
+    #writer = csv.writer(file)
+    ## Add the new row to the CSV file
+    #writer.writerow(x)
 
     # Run the Tkinter mainloop
     root.mainloop()
@@ -484,3 +518,25 @@ def main():
 
 if __name__ == '__main__':
     main()
+
+    
+########################
+# code used to create graphs from csv file:
+#import matplotlib.pyplot as plt
+# import numpy as np
+# import pandas as pd
+
+# P = 0.9  # uniform distribution parameter
+# L = 5  # number of generations to wait for continue spread rumor
+# S = [0.4, 0.3, 0.2, 0.1]
+
+# arrays = []
+# df = pd.read_csv('spreadcount.csv')
+# avg = df.mean(axis=0)
+# plt.plot(np.arange(1, 201), avg[:200])
+# plt.ylabel('Percent Of People Who Heard The Rumor')
+# plt.xlabel('Generation')
+# plt.title(f'Spread rate %: P={P} L={L} S1={S[0]} S2={S[1]} S3={S[2]} S4={S[3]}')
+# plt.savefig('plot.png')
+# plt.show()
+########################
